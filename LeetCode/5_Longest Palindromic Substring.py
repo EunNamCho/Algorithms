@@ -15,18 +15,26 @@ class Solution:
         #         start_idx += 1
         # return answer
         def expand(left, right):
-            while left >= 0 and right <= len(s) and s[left]==s[right]:
-                left -= 1
-                right += 1
+            while True:
+                if left < 0 or right > len(s)-1:
+                    break
+                if s[left]==s[right]:
+                    left -= 1
+                    right += 1
+                else:
+                    break
             return s[left+1:right]
         
         answer = ""
         if len(s)==1 or s==s[::-1]:
             return s
-        for i in range(len(s)-2):
-            print(answer, expand(i,i+1), expand(i,i+2))
+        for i in range(len(s)-1):
             answer = max(answer, expand(i,i+1), expand(i,i+2), key=len)
         return answer
         
 sol = Solution()
 print(sol.longestPalindrome("dabab"))
+
+"""
+    회문은 짝/홀 윈도우 생각하자.
+"""
