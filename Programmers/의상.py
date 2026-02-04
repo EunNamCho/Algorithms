@@ -10,3 +10,13 @@ def solution(clothes):
     return answer - 1
 
 print(solution([["yellow_hat", "headgear"], ["blue_sunglasses", "eyewear"], ["green_turban", "headgear"]]))
+
+from collections import defaultdict
+def solution(clothes):
+    answer = 1
+    count = defaultdict(int)
+    for _, part in clothes:
+        count[part]+=1
+    for number in count.values():
+        answer *= (number+1)
+    return answer - 1

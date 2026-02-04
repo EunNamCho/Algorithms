@@ -1,5 +1,6 @@
 from collections import Counter
 
+
 def solution(want, number, discount):
     answer = 0
     L=len(discount)
@@ -7,15 +8,22 @@ def solution(want, number, discount):
     cnt = Counter(discount[:10])
     diff = dict()
     for k in want.keys():
-        diff[k]=max(want.get(k,0)-cnt.get(k,0),0)
+        diff[k]=want.get(k,0)-cnt.get(k,0)
     remain = max(diff.values())
-    print(cnt)
-    print(want)
+    if remain<=0: 
+            # print(i)
+            answer+=1
+    # print(diff)
     
     for i in range(L-10):
-        if remain>0: answer+=1
-        print(diff)
-        diff[discount[i]]=max(diff.get(discount[i],0)+1,0)
-        diff[discount[min(i+10,L)]]=diff.get(discount[min(i+10,L)],0)-1
+        
+        if want.get(discount[i]) is not None:
+            diff[discount[i]]=diff.get(discount[i],0)+1
+        if want.get(discount[i+10]) is not None:
+            diff[discount[i+10]]=diff.get(discount[i+10],0)-1
         remain = max(diff.values())
+        # print(i,diff,remain)
+        if remain<=0: 
+            # print(i)
+            answer+=1
     return answer
