@@ -1,58 +1,76 @@
 import sys
+from typing import Tuple, List
+input = sys.stdin.readline
 
-# input
-N, M = map(int, sys.stdin.readline())
-matrix = [list(map(int,sys.stdin.readline().split())) for _ in range(N)]
-basis = [
-    [(0,0),(0,1),(0,2),(0,3)], #l
-    [(0,0),(0,1),(1,0),(1,1)], #O
-    [(0,0),(1,0),(2,0),(2,1)], #L
-    [(0,0),(1,0),(1,1),(2,1)], #Z
-    [(0,0),(0,1),(0,2),(1,1)], #T
-]
-tetrominos = set()
-answer = 0
+def main():
+    # Input
+    N, M = map(int, input().split())
+    matrix = [list(map(int,input().split())) for _ in range(N)]
 
-#algorithm - Implementation
-def norm(polygon):
-    min_r = min_c = 0
-    for p in polygon:
-        r,c = p
-        min_r = min(min_r,r)
-        min_c = min(min_c,c)
+    # Algorithm - BruteForce + Implementation
+    def normalize(shape: List) -> Tuple[List]:
+        min_x, min_y = float("inf"), float("inf")
+        for x,y in shape:
+            min_x = min(min_x,x)
+            min_y = min(min_y,y)
         
-    for i,p in enumerate(polygon):
-        polygon[i] = (p[0]-min_r,p[1]-min_c)
-    return polygon
+        norm_shape = []
+        for x,y in shape:
+            norm_shape.append((x-min_x, y-min_y))
+        norm_shape.sort()
+        return tuple(norm_shape)
 
-def clock_rotate(polygon):
-    # x->-y, y->x ==> c->-r, r->c
-    for i,p in enumerate(polygon):
-        polygon[i] = (-p[1], p[0])
-    polygon=norm(polygon)
-    return polygon
-
-def y_reflect(polygon):
-    for i,p in enumerate(polygon):
-        polygon[i] = (p[0],-p[1])
-    polygon=norm(polygon)
-    return polygon
-
-def Imple():
-    for base in basis:
-        tetrominos.add(base)
-        tmp = base
-        for _ in range(3):
-            tmp = clock_rotate(tmp)
-            tetrominos.add(tmp)
-            
-        tmp = y_reflect(base)
-        tetrominos.add(tmp)
-        for _ in range(3):
-            tmp = clock_rotate(tmp)
-            tetrominos.add(tmp)
+    def rotation(shape: List) -> Tuple[List]:
+        # x=y, y=-x
+        rot_shape = []
+        for x,y in shape:
+            rot_shape.append((y,-x))
+        return normalize(rot_shape)
     
-    for tetro in tetrominos:
+    def y_reflect(shape: List) -> Tuple[List]:
+        # x=-x, y=y
+        ref_shape = []
+        for x,y in shape:
+            ref_shape.append((-x,y))
+        return normalize(ref_shape)
+
+    basis = [
+        [(0,0),(0,1),(0,2),(0,3)], # ㅡ
+        [(0,0),(0,1),(1,1),(1,0)], # ㅁ
+        [(0,0),(1,0),(2,0),(2,1)], # L
+        [(0,0),(1,0),(1,1),(2,1)], # Z
+        [(0,0),(0,1),(0,2),(1,1)], # ㅜ
+    ]
+    
+    tetrominos = set()
+    for base in basis:
+        # rotation
+        for i in range(4):
+            base = rotation(base)
+            tetrominos.add(base)
         
-            
-        
+        # reflect then rotate
+        base = y_reflect(base)
+        for i in range(4):
+            base = rotation(base)
+            tetrominos.add(base)
+    
+    max_point = 0
+    for row in range(N):
+        for col in range(M):
+            for tetro in tetrominos:
+                tmp = 0
+                out_of_range = False
+                for r,c in tetro:
+                    nr,nc = r+row, c+col
+                    if 0<=nr<N and 0<=nc<M:
+                        tmp += matrix[nr][nc]
+                    else:
+                        out_of_range = True
+                        break
+                if not out_of_range:
+                    max_point = max(max_point, tmp)
+
+    print(max_point)
+
+main()
