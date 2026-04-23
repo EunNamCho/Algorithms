@@ -27,3 +27,31 @@ for i in range(1,N+1):
                 queue.append(neighbor)
 
 print(component)
+
+
+#####################
+import sys
+from collections import deque
+input = sys.stdin.readline
+
+def main():
+    # Input
+    N,M = map(int, input().split())
+    matrix = [[] for _ in range(N)]
+    for _ in range(M):
+        a,b = map(int,input().split())
+        matrix[a-1][b-1] = 1
+        matrix[b-1][a-1] = 1
+    for _ in range*M:
+        a,b = map(int,input().split())
+        matrix[a].append(b)
+        matrix[b].append(a)
+    # Algorithm - BFS
+    visited = [False]*N
+    queue = deque()
+    for i in range(N):
+        if not visited[i]:
+            queue.append(i)
+            
+            f
+
